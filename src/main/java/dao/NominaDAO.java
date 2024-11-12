@@ -15,6 +15,15 @@ import model.Empleado;
 import model.Nomina;
 
 public class NominaDAO {
+	private static NominaDAO instancia;
+
+	public static NominaDAO getInstance() {
+		if (NominaDAO.instancia == null) {
+			return new NominaDAO();
+		} else {
+			return instancia;
+		}
+	}
 
     /**
      * Obtiene el salario de un empleado dado su DNI.

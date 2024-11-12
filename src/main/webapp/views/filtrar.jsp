@@ -137,8 +137,8 @@ tr:hover {
 	<h2>Filtrar Empleados</h2>
 	<!-- Formulario de Filtrado -->
 
-	<form action="filtrar" method="get">
-
+	<form action="front" method="get">
+	<input type="hidden" name="option" value="filtrar" />
 		<label for="sexo">Sexo:</label> 
 		<select id="sexo" name="sexo">
 			<option value="">--Selecciona--</option>
@@ -161,9 +161,7 @@ tr:hover {
 		<input type="number" id="anyos" name="anyos" value="${param.anyos}">
 
 		<button type="submit">Apply</button>
-		<button type="submit">
-			<a href="filtrar">Reset</a>
-		</button>
+		<button type="reset" onclick="window.location.href='front?option=filtrar';">Reset</button>
 
 	</form>
 

@@ -92,7 +92,8 @@ a {
 </head>
 <body>
 	<h2>Lista de Empleados</h2>
-	<form action="views/crearEmpleado.jsp" method="get">
+	<form action="front" method="get">
+	<input type="hidden" name="option" value="crearEmpleado" />
 		<input type="submit" value="Agregar Nuevo Empleado">
 	</form>
 
@@ -116,12 +117,14 @@ a {
 					<td>${empleado.categoria}</td>
 					<td>${empleado.anosTrabajados}</td>
 					<td>
-						<form action="modificar" method="get">
+						<form action="front" method="get">
+						<input type="hidden" name="option" value="modificar" />
 							<input type="hidden" name="dni" value="${empleado.dni}" /> <input
 								type="submit" value="Modificar">
 						</form>
-						<form action="eliminarEmpleServlet" method="post"
+						<form action="front" method="post"
 							style="display: inline;">
+							<input type="hidden" name="option" value="eliminarEmple" />
 							<input type="hidden" name="dni" value="${empleado.dni}" /> <input
 								type="submit" value="Eliminar"
 								onclick="return confirm('¿Estás seguro de que deseas eliminar este empleado?');">

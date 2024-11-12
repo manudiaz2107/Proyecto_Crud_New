@@ -4,6 +4,7 @@ import dao.EmpleadoDAO;
 import dao.NominaDAO;
 import model.Empleado;
 import model.Nomina;
+import observer.NominaObserver;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,41 +14,41 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/*")  // Captura todas las solicitudes
+@WebServlet("/front") 
 public class FrontControllerServlet extends HttpServlet {
 
-    private EmpleadoDAO empleadoDAO;
-    private NominaDAO nominaDAO;
-
+    private NominaDAO nominaDAO = NominaDAO.getInstance();
+    private final EmpleadoDAO empleadoDAO = EmpleadoDAO.getInstance();
+    
     @Override
-    public void init() throws ServletException {
-        empleadoDAO = new EmpleadoDAO();
-        nominaDAO = new NominaDAO();
+    public void init() {
+        // Registrar el observador
+        empleadoDAO.agregarObserver(new NominaObserver());
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getRequestURI().substring(request.getContextPath().length());
+    	String option = request.getParameter("option");
 
-        switch (action) {
+        switch (option) {
             case "/":
                 // Redirige a la página de inicio
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
-            case "/empleados":
+            case "empleados":
                 listarEmpleados(request, response);
                 break;
-            case "/crearEmpleado":
+            case "crearEmpleado":
                 request.getRequestDispatcher("/views/crearEmpleado.jsp").forward(request, response);
                 break;
-            case "/modificar":
+            case "modificar":
                 mostrarFormularioModificar(request, response);
                 break;
-            case "/filtrar":
+            case "filtrar":
                 filtrarEmpleados(request, response);
                 break;
-            case "/salario":
+            case "salario":
                 mostrarSalarioEmpleado(request, response);
                 break;
             default:
@@ -58,19 +59,19 @@ public class FrontControllerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getRequestURI().substring(request.getContextPath().length());
+    	String option = request.getParameter("option");
 
-        switch (action) {
-            case "/crearEmpleado":
+        switch (option) {
+            case "crearEmpleado":
                 crearEmpleado(request, response);
                 break;
-            case "/eliminarEmple":
+            case "eliminarEmple":
                 eliminarEmpleado(request, response);
                 break;
-            case "/modificar":
+            case "modificar":
                 modificarEmpleado(request, response);
                 break;
-            case "/calcularSalario":
+            case "calcularSalario":
                 calcularSalario(request, response);
                 break;
             default:
@@ -82,7 +83,7 @@ public class FrontControllerServlet extends HttpServlet {
             throws ServletException, IOException {
         List<Empleado> empleados = empleadoDAO.listarEmpleados();
         request.setAttribute("empleados", empleados);
-        request.getRequestDispatcher("views/empleados.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/empleados.jsp").forward(request, response);
     }
 
     private void crearEmpleado(HttpServletRequest request, HttpServletResponse response)
@@ -97,14 +98,14 @@ public class FrontControllerServlet extends HttpServlet {
         empleadoDAO.agregarEmpleado(nuevoEmpleado);
 
         // Redirigir a la lista de empleados
-        response.sendRedirect("empleados");
+        response.sendRedirect("front?option=empleados");
     }
 
     private void eliminarEmpleado(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String dni = request.getParameter("dni");
         empleadoDAO.eliminarEmpleado(dni);
-        response.sendRedirect("empleados");
+        response.sendRedirect("front?option=empleados");
     }
 
     private void mostrarFormularioModificar(HttpServletRequest request, HttpServletResponse response)
@@ -134,7 +135,7 @@ public class FrontControllerServlet extends HttpServlet {
         double nuevoSalario = nominaDAO.calcularNuevoSalario(empleado);
         nominaDAO.actualizarSalario(dni, nuevoSalario);
 
-        response.sendRedirect("empleados");
+        response.sendRedirect("front?option=empleados");
     }
 
     private void filtrarEmpleados(HttpServletRequest request, HttpServletResponse response)
@@ -162,9 +163,9 @@ public class FrontControllerServlet extends HttpServlet {
             throws ServletException, IOException {
         String dni = request.getParameter("dni");
         double salario = nominaDAO.obtenerSalarioPorDni(dni);
-
+        
         request.setAttribute("salario", salario);
-        request.getRequestDispatcher("/views/salario.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/consultarSalario.jsp").forward(request, response);
     }
     
     private void calcularSalario(HttpServletRequest request, HttpServletResponse response)
@@ -174,10 +175,12 @@ public class FrontControllerServlet extends HttpServlet {
 
         if (empleado != null) {
             double salario = nominaDAO.calcularNuevoSalario(empleado);
-            request.setAttribute("salario", salario);
-            request.getRequestDispatcher("/views/salario.jsp").forward(request, response);
+            request.setAttribute("dni", dni);  // Agregar el DNI para pasarlo al JSP
+            request.setAttribute("salario", salario);  // Pasar el salario al JSP
+            request.getRequestDispatcher("/views/consultarSalario.jsp").forward(request, response);
         } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Empleado no encontrado");
+        	request.setAttribute("error", "No se encontró el salario para el DNI: " + dni);
+            request.getRequestDispatcher("views/consultarSalario.jsp").forward(request, response);
         }
     }
 }

@@ -61,9 +61,9 @@ a:hover {
 	<h1>Bienvenido a la Aplicación de Nóminas</h1>
 
 
-	<a href="empleados">Mostrar todos los empleados</a>
-	<a href="salario">Mostrar salario de un empleado</a>
-	<a href="filtrar">Filtrar</a>
+	<a href="front?option=empleados">Listar empleados</a>
+	<a href="front?option=salario">Mostrar salario de un empleado</a>
+	<a href="front?option=filtrar">Filtrar</a>
 
 </body>
 </html>

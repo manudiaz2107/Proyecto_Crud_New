@@ -108,7 +108,8 @@
 	</c:if>
 
 	<c:if test="${not empty empleado}">
-		<form action="modificar" method="post">
+		<form action="front" method="post">
+		<input type="hidden" name="option" value="modificar" />
 			<input type="hidden" name="dni" value="${empleado.dni}" /> <label>Nombre:</label>
 			<input type="text" name="nombre" value="${empleado.nombre}" required /><br />
 			<label>Sexo:</label> <select name="sexo" required>

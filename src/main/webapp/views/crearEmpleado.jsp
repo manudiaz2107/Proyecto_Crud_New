@@ -115,8 +115,8 @@
 
 	<br>
 	<a href="javascript:history. back()">Volver</a>
-	<form action="${pageContext.request.contextPath}/crearEmpleado"
-		method="post">
+	<form action="${pageContext.request.contextPath}/front" method="post">
+	<input type="hidden" name="option" value="crearEmpleado" />
 		<label>DNI:</label> <input type="text" name="dni" required /><br />
 
 		<label>Nombre:</label> <input type="text" name="nombre" required /><br />
@@ -142,7 +142,7 @@
 	</form>
 
 	<br>
-	<form action="../index.jsp" method="get">
+	<form action="index.jsp" method="get">
 		<input type="submit" value="Volver al Menú Principal">
 	</form>
 </body>
